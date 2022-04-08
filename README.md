@@ -26,8 +26,7 @@ https://piazza.com/class/ky8xiakerco4ka?cid=555_f3
   * 2 All pages pass the html validator
 
 #### Creative Portion (5 points)
-  ##### Possibilities: 
-  
+  * Possibilities: 
     * Guests can save card to new account at/after checkout
     * Divides single donation payment among collaborators
     * Can create policy for dividing payment unequally
