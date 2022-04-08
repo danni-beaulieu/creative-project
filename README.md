@@ -1,6 +1,6 @@
 # CSE330
-Student ID: 497567 
-Github Username: danni-beaulieu
+Student ID: 497567   
+Github Username: danni-beaulieu   
 
 ## Rubric
 
@@ -27,6 +27,7 @@ https://piazza.com/class/ky8xiakerco4ka?cid=555_f3
 
 #### Creative Portion (5 points)
   ##### Possibilities: 
-    Guests can save card to new account at/after checkout
-    Divides single donation payment among collaborators
-    Can create policy for dividing payment unequally
+  
+    * Guests can save card to new account at/after checkout
+    * Divides single donation payment among collaborators
+    * Can create policy for dividing payment unequally
