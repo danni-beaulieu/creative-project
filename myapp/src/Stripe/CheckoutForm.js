@@ -18,7 +18,7 @@ export const CheckoutForm = () => {
         try {
           const { id } = paymentMethod;
           const response = await axios.post(
-            "http://localhost:8080/stripe/charge",
+            "http://ec2-44-202-59-171.compute-1.amazonaws.com:8080/stripe/charge",
             {
               amount: 999,
               id: id,

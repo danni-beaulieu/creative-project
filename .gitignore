@@ -13,7 +13,12 @@
 *.vsix
 
 # Node JS
+myapp/node_modules
 myapp/node_modules/*
 myapp/package-lock.json
+stripe-server/node_modules
 stripe-server/node_modules/*
 stripe-server/package-lock.json
+myserver/node_modules
+myserver/node_modules/*
+myserver/package-lock.json
