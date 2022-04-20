@@ -6,7 +6,7 @@ const Login = () => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
-    const history = useNavigate();
+    const navigate = useNavigate();
  
     const Auth = async (e) => {
         e.preventDefault();
@@ -16,7 +16,7 @@ const Login = () => {
                 login: login,
                 password: password
             });
-            history.push("/dashboard");
+            navigate("/dashboard");
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);

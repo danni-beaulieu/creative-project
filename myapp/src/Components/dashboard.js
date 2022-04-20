@@ -5,27 +5,44 @@ import jwt_decode from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
  
 const Dashboard = () => {
-    const [name, setName] = useState('');
+    const [display, setDisplay] = useState('');
     const [token, setToken] = useState('');
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
-    const history = useNavigate();
+    const navigate = useNavigate();
  
     useEffect(() => {
         refreshToken();
         getUsers();
+
+        // // Add inner async function
+        // const fetchUsers = async () => {
+        //     try {
+        //         await refreshToken();
+        //         await getUsers();
+        //     } catch (error) {
+        //         console.log("dashboard.useEffect: " + error);
+        //     }
+        // }
+    
+        // // Call function immediately
+        // fetchUsers()
     }, []);
  
     const refreshToken = async () => {
+        console.log("dashboard.refreshToken... ");
         try {
             const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/token');
-            setToken(response.data.accessToken);
-            const decoded = jwt_decode(response.data.accessToken);
-            setName(decoded.name);
+            console.log("dashboard.refreshToken response.data:" + JSON.stringify(response.data));
+            setToken(response.data.token);
+            const decoded = jwt_decode(response.data.token);
+            console.log("dashboard.refreshToken decoded:" + JSON.stringify(decoded));
+            setDisplay(decoded.display);
             setExpire(decoded.exp);
         } catch (error) {
+            console.log("dashboard.refreshToken error:" + error);
             if (error.response) {
-                history.push("/");
+                navigate("/");
             }
         }
     }
@@ -39,7 +56,8 @@ const Dashboard = () => {
             config.headers.Authorization = `Bearer ${response.data.accessToken}`;
             setToken(response.data.accessToken);
             const decoded = jwt_decode(response.data.accessToken);
-            setName(decoded.name);
+            console.log("dashboard: " + decoded);
+            setDisplay(decoded.display);
             setExpire(decoded.exp);
         }
         return config;
@@ -48,31 +66,36 @@ const Dashboard = () => {
     });
  
     const getUsers = async () => {
-        const response = await axiosJWT.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        setUsers(response.data);
+        try {
+            console.log("dashboard.getUsers token: " + token);
+            const response = await axiosJWT.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setUsers(response.data);
+        } catch (error) {
+            console.log("dashboard.getUsers: " + error);
+        }
     }
  
     return (
         <div className="container mt-5">
-            <h1>Welcome Back: {name}</h1>
+            <h1>Welcome Back: {display}</h1>
             <table className="table is-striped is-fullwidth">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Name</th>
-                        <th>Email</th>
+                        <th>Login Name</th>
+                        <th>Display Name</th>
                     </tr>
                 </thead>
                 <tbody>
                     {users.map((user, index) => (
                         <tr key={user.id}>
                             <td>{index + 1}</td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
+                            <td>{user.login}</td>
+                            <td>{user.display}</td>
                         </tr>
                     ))}
  

@@ -24,8 +24,10 @@ export const Register = async(req, res) => {
             display_name: display,
             password: hashPassword
         });
+        console.log("Registration Successful");
         res.json({msg: "Registration Successful"});
     } catch (error) {
+        console.log("Error Registering");
         console.log(error);
     }
 }
@@ -40,10 +42,10 @@ export const Login = async(req, res) => {
         const match = await bcrypt.compare(req.body.password, user[0].password);
         if(!match) return res.status(400).json({msg: "Wrong Password"});
         const userid = user[0].id;
-        const login = user[0].name_name;
+        const login = user[0].login_name;
         const display = user[0].display_name;
         const accessToken = jwt.sign({userid, login, display}, process.env.ACCESS_TOKEN_SECRET,{
-            expiresIn: '15s'
+            expiresIn: '15m'
         });
         const refreshToken = jwt.sign({userid, login, display}, process.env.REFRESH_TOKEN_SECRET,{
             expiresIn: '1d'
