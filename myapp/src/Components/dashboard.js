@@ -13,7 +13,7 @@ const Dashboard = () => {
  
     useEffect(() => {
         refreshToken();
-        getUsers();
+        // getUsers();
 
         // // Add inner async function
         // const fetchUsers = async () => {
@@ -28,6 +28,14 @@ const Dashboard = () => {
         // // Call function immediately
         // fetchUsers()
     }, []);
+
+    useEffect(() => {
+        // this will be triggered whenever token will be updated
+        console.log('dashboard.useEffect getting users... ', token);
+        if (token) {
+            getUsers();
+        }
+      }, [token]);
  
     const refreshToken = async () => {
         console.log("dashboard.refreshToken... ");
@@ -35,6 +43,7 @@ const Dashboard = () => {
             const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/token');
             console.log("dashboard.refreshToken response.data:" + JSON.stringify(response.data));
             setToken(response.data.token);
+            console.log("dashboard.refreshToken token set:" + token);
             const decoded = jwt_decode(response.data.token);
             console.log("dashboard.refreshToken decoded:" + JSON.stringify(decoded));
             setDisplay(decoded.display);
@@ -53,10 +62,12 @@ const Dashboard = () => {
         const currentDate = new Date();
         if (expire * 1000 < currentDate.getTime()) {
             const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/token');
-            config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-            setToken(response.data.accessToken);
-            const decoded = jwt_decode(response.data.accessToken);
-            console.log("dashboard: " + decoded);
+            console.log("dashboard response.data:" + JSON.stringify(response.data));
+            config.headers.Authorization = `Bearer ${response.data.token}`;
+            setToken(response.data.token);
+            console.log("dashboard token set:" + token);
+            const decoded = jwt_decode(response.data.token);
+            console.log("dashboard decoded: " + JSON.stringify(decoded));
             setDisplay(decoded.display);
             setExpire(decoded.exp);
         }
@@ -73,6 +84,7 @@ const Dashboard = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log("dashboard.getUsers users: " + JSON.stringify(response.data));
             setUsers(response.data);
         } catch (error) {
             console.log("dashboard.getUsers: " + error);
@@ -94,8 +106,8 @@ const Dashboard = () => {
                     {users.map((user, index) => (
                         <tr key={user.id}>
                             <td>{index + 1}</td>
-                            <td>{user.login}</td>
-                            <td>{user.display}</td>
+                            <td>{user.login_name}</td>
+                            <td>{user.display_name}</td>
                         </tr>
                     ))}
  
