@@ -83,3 +83,18 @@ export const Logout = async(req, res) => {
     res.clearCookie('refreshToken');
     return res.sendStatus(200);
 }
+
+export const updateUser = async (req, res) => {
+    try {
+        await Users.update(req.body, {
+            where: {
+                id: req.params.id
+            }
+        });
+        res.json({
+            "message": "User Updated"
+        });
+    } catch (error) {
+        res.json({ message: error.message });
+    }  
+}

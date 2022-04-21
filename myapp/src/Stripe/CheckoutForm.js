@@ -7,27 +7,41 @@ import { useCookies } from "react-cookie";
 export const CheckoutForm = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
   const [amount, setAmount] = useState('');
+  // const [customerid, setCustomerID] = useState(cookies.customerid);
+  // const [userid, setUserID] = useState(cookies.userid);
   const stripe = useStripe();
   const elements = useElements();
+  let userid = cookies.userid;
+  let customerid = cookies.customerid;
+
+  const updateUser = async () => {
+    await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
+        customer_id: customerid
+    });
+}
 
   const handleSubmit = async (event) => {
-    let customerid = cookies.customerid;
     event.preventDefault();
+    console.log(typeof userid);
+    console.log(typeof customerid);
 
-    console.log(customerid)
-    try {
-      const response = await axios.get("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
+    if (customerid == null || customerid == '' || customerid == "null") {
+      try {
+        const response = await axios.get("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
 
-      console.log("Stripe 22 | data", response.data.success);
-      if (response.data.success) {
-        console.log("CheckoutForm.js 24 | customer successful!" + JSON.stringify(response.data));
-        customerid = response.data.customerid;
-        setCookie("customerid", customerid, { path: '/' });
+        console.log("Stripe 22 | data", response.data.success);
+        if (response.data.success) {
+          console.log("CheckoutForm.js 24 | customer successful!" + JSON.stringify(response.data));
+          customerid = response.data.customerid;
+          setCookie("customerid", customerid, { path: '/' });
+          updateUser();
+        }
+      } catch (error) {
+        console.log("CheckoutForm.js 29 | ", error);
       }
-    } catch (error) {
-      console.log("CheckoutForm.js 29 | ", error);
     }
 
+    console.log(customerid);
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card: elements.getElement(CardElement)
