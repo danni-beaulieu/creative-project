@@ -1,13 +1,16 @@
 import React from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from "react-cookie";
  
 const Navbar = () => {
     const navigate = useNavigate();
+    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
  
     const Logout = async () => {
         try {
             await axios.delete('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/logout');
+            removeCookie("userid");
             navigate("/");
         } catch (error) {
             console.log(error);

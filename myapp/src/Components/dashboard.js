@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import jwt_decode from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from "react-cookie";
  
 const Dashboard = () => {
     const [display, setDisplay] = useState('');
@@ -10,23 +11,10 @@ const Dashboard = () => {
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
+    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
  
     useEffect(() => {
         refreshToken();
-        // getUsers();
-
-        // // Add inner async function
-        // const fetchUsers = async () => {
-        //     try {
-        //         await refreshToken();
-        //         await getUsers();
-        //     } catch (error) {
-        //         console.log("dashboard.useEffect: " + error);
-        //     }
-        // }
-    
-        // // Call function immediately
-        // fetchUsers()
     }, []);
 
     useEffect(() => {
@@ -46,6 +34,8 @@ const Dashboard = () => {
             console.log("dashboard.refreshToken token set:" + token);
             const decoded = jwt_decode(response.data.token);
             console.log("dashboard.refreshToken decoded:" + JSON.stringify(decoded));
+            setCookie("userid", decoded.userid, { path: '/' });
+            console.log("dashboard.refreshToken cookie: " + cookies.userid);
             setDisplay(decoded.display);
             setExpire(decoded.exp);
         } catch (error) {
@@ -68,6 +58,8 @@ const Dashboard = () => {
             console.log("dashboard token set:" + token);
             const decoded = jwt_decode(response.data.token);
             console.log("dashboard decoded: " + JSON.stringify(decoded));
+            setCookie("userid", decoded.userid, { path: '/' });
+            console.log("dashboard cookie: " + cookies.userid);
             setDisplay(decoded.display);
             setExpire(decoded.exp);
         }

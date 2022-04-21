@@ -23,9 +23,6 @@ import EditProject from "./Components/edit_project";
 function App() {
   return (
     <BrowserRouter>
-        <div className="container">
-        <div className="columns">
-        <div className="column is-half is-offset-one-quarter">
         <Routes>
           <Route exact path="/" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
@@ -34,9 +31,6 @@ function App() {
           <Route path="/projects/create" element={<CreateProject/>}></Route>
           <Route path="/projects/edit/:id" element={<EditProject/>}></Route>
         </Routes>
-        </div>
-        </div>
-        </div>
     </BrowserRouter>
   );
 };

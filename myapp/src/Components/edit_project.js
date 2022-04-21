@@ -28,6 +28,9 @@ const EditProject = () => {
     }
  
     return (
+        <div className="container">
+        <div className="columns">
+        <div className="column is-half is-offset-one-quarter">
         <div>
             <form onSubmit={ updateProject }>
                 <div className="field">
@@ -56,6 +59,9 @@ const EditProject = () => {
                     <button className="button is-primary">Update</button>
                 </div>
             </form>
+        </div>
+        </div>
+        </div>
         </div>
     )
 }
