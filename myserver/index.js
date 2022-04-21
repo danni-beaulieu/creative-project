@@ -4,8 +4,19 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import db from "./config/database.js";
 import router from "./routes/index.js";
+
 dotenv.config();
 const app = express();
+
+const nameYourFunction = async () => {
+    try {
+        await db.authenticate();
+        console.log('Database connected...');
+    } catch (error) {
+        console.error('Connection error:', error);
+    }
+}
+nameYourFunction();
  
 app.use(cors({ credentials:true, origin:'http://ec2-44-202-59-171.compute-1.amazonaws.com:3000' }));
 app.use(cookieParser());

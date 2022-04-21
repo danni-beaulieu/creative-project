@@ -16,15 +16,27 @@ import Login from "./Components/login";
 import Dashboard from "./Components/dashboard";
 import Navbar from "./Components/navbar";
 import Register from "./Components/register";
+import ViewProjects from "./Components/view_projects";
+import CreateProject from "./Components/create_project";
+import EditProject from "./Components/edit_project";
  
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route exact path="/" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
-        <Route path="/dashboard" element={<><Navbar/><Dashboard/></>}></Route>
-      </Routes>
+        <div className="container">
+        <div className="columns">
+        <div className="column is-half is-offset-one-quarter">
+        <Routes>
+          <Route exact path="/" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
+          <Route path="/dashboard" element={<><Navbar/><Dashboard/></>}></Route>
+          <Route path="/projects" element={<ViewProjects/>}></Route>
+          <Route path="/projects/create" element={<CreateProject/>}></Route>
+          <Route path="/projects/edit/:id" element={<EditProject/>}></Route>
+        </Routes>
+        </div>
+        </div>
+        </div>
     </BrowserRouter>
   );
 };
