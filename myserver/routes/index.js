@@ -9,6 +9,7 @@ import {
   updateProject,
   deleteProject
 } from "../controllers/projects.js";
+import { chargeStripe } from "../controllers/stripe.js";
  
 const router = express.Router();
  
@@ -23,5 +24,7 @@ router.get('/projects/:id', getProjectById);
 router.post('/projects', createProject);
 router.patch('/projects/:id', updateProject);
 router.delete('/projects/:id', deleteProject);
+
+router.post('/stripe/charge', chargeStripe);
  
 export default router;

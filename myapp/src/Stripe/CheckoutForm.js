@@ -1,8 +1,10 @@
 import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
+import { useState, useEffect } from 'react'
 
 export const CheckoutForm = () => {
+  const [amount, setAmount] = useState('');
   const stripe = useStripe();
   const elements = useElements();
 
@@ -15,12 +17,13 @@ export const CheckoutForm = () => {
 
     if (!error) {
         console.log("Stripe 23 | token generated!", paymentMethod);
+        console.log("Amount: " + amount);
         try {
           const { id } = paymentMethod;
           const response = await axios.post(
-            "http://ec2-44-202-59-171.compute-1.amazonaws.com:8080/stripe/charge",
+            "http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/charge",
             {
-              amount: 999,
+              amount: amount,
               id: id,
             }
           );
@@ -38,9 +41,29 @@ export const CheckoutForm = () => {
     };
 
   return (
+    <div className="container">
+    <div className="columns">
+    <div className="column is-half is-offset-one-quarter">
+    <div>
     <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
+      <div className="field">
+        <label className="label">Amount</label>
+        <input 
+            className="input"
+            type="text"
+            placeholder="Amount"
+            value={ amount }
+            onChange={ (e) => setAmount(e.target.value) }
+        />
+      </div>
       <CardElement />
-      <button>Pay</button>
+      <div className="field">
+          <button className="button is-primary">Donate</button>
+      </div>
     </form>
+    </div>
+    </div>
+    </div>
+    </div>
   );
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import StripeContainer from "../Stripe/StripeContainer";
  
 const ViewProjects = () => {
     const [projects, setProject] = useState([]);
@@ -43,6 +44,7 @@ const ViewProjects = () => {
                             <td>{ project.title }</td>
                             <td>{ project.description }</td>
                             <td>
+                            <Link to={`/projects/donate/${project.id}`} className="button is-small is-link">Donate</Link>
                             { project.user_id == cookies.userid ? 
                                 <><Link to={`/projects/edit/${project.id}`} className="button is-small is-info">Edit</Link>
                                 <button onClick={() => deleteProject(project.id)} className="button is-small is-danger">Delete</button></>

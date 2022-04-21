@@ -9,8 +9,7 @@
 // };
 
 import React from "react";
-// import StripeContainer from "./Stripe/StripeContainer";
-
+import StripeContainer from "./Stripe/StripeContainer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./Components/login";
 import Dashboard from "./Components/dashboard";
@@ -30,6 +29,7 @@ function App() {
           <Route path="/projects" element={<ViewProjects/>}></Route>
           <Route path="/projects/create" element={<CreateProject/>}></Route>
           <Route path="/projects/edit/:id" element={<EditProject/>}></Route>
+          <Route path="/projects/donate/:id" element={<StripeContainer/>}></Route>
         </Routes>
     </BrowserRouter>
   );
