@@ -2,7 +2,6 @@ import Stripe from 'stripe';
 import dotenv from "dotenv";
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_TEST);
-// const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 
 export const chargeStripe = async (req, res) => {
     
@@ -27,6 +26,27 @@ export const chargeStripe = async (req, res) => {
       console.log("stripe-routes.js 17 | error", error);
       res.json({
         message: "Payment Failed",
+        success: false,
+      });
+    }
+  }
+
+  export const newCustomer = async (req, res) => {
+    
+    console.log("stripe-routes.js 36 | route reached", req.body);
+
+    try {
+      const customer = await stripe.customers.create({});
+      console.log("stripe-routes.js 40 | customer", customer.id);
+      res.json({
+        message: "Customer Successful",
+        success: true,
+        customerid: customer.id
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 47 | error", error);
+      res.json({
+        message: "Customer Failed",
         success: false,
       });
     }

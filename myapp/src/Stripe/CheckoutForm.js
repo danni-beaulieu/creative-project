@@ -2,17 +2,35 @@ import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useState, useEffect } from 'react'
+import { useCookies } from "react-cookie";
 
 export const CheckoutForm = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
   const [amount, setAmount] = useState('');
   const stripe = useStripe();
   const elements = useElements();
 
   const handleSubmit = async (event) => {
+    let customerid = cookies.customerid;
     event.preventDefault();
+
+    console.log(customerid)
+    try {
+      const response = await axios.get("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
+
+      console.log("Stripe 22 | data", response.data.success);
+      if (response.data.success) {
+        console.log("CheckoutForm.js 24 | customer successful!" + JSON.stringify(response.data));
+        customerid = response.data.customerid;
+        setCookie("customerid", customerid, { path: '/' });
+      }
+    } catch (error) {
+      console.log("CheckoutForm.js 29 | ", error);
+    }
+
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
-      card: elements.getElement(CardElement),
+      card: elements.getElement(CardElement)
     });
 
     if (!error) {

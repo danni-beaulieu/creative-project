@@ -15,6 +15,9 @@ const Users = db.define('users',{
     },
     refresh_jwt:{
         type: DataTypes.TEXT
+    },
+    customer_id:{
+        type: DataTypes.STRING
     }
 },{
     freezeTableName:true

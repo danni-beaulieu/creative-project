@@ -11,7 +11,7 @@ const Dashboard = () => {
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
-    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
+    const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
  
     useEffect(() => {
         refreshToken();
@@ -35,7 +35,8 @@ const Dashboard = () => {
             const decoded = jwt_decode(response.data.token);
             console.log("dashboard.refreshToken decoded:" + JSON.stringify(decoded));
             setCookie("userid", decoded.userid, { path: '/' });
-            console.log("dashboard.refreshToken cookie: " + cookies.userid);
+            setCookie("customerid", decoded.customerid, { path: '/' });
+            console.log("dashboard.refreshToken cookie: (uid) " + cookies.userid + " (cid) " + cookies.customerid);
             setDisplay(decoded.display);
             setExpire(decoded.exp);
         } catch (error) {
@@ -59,7 +60,8 @@ const Dashboard = () => {
             const decoded = jwt_decode(response.data.token);
             console.log("dashboard decoded: " + JSON.stringify(decoded));
             setCookie("userid", decoded.userid, { path: '/' });
-            console.log("dashboard cookie: " + cookies.userid);
+            setCookie("customerid", decoded.customerid, { path: '/' });
+            console.log("dashboard cookie: (uid) " + cookies.userid + " (cid) " + cookies.customerid);
             setDisplay(decoded.display);
             setExpire(decoded.exp);
         }
