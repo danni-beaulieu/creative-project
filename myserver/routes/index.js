@@ -9,7 +9,7 @@ import {
   updateProject,
   deleteProject
 } from "../controllers/projects.js";
-import { chargeStripe, newCustomer } from "../controllers/stripe.js";
+import { chargeStripe, createIntent, newCustomer } from "../controllers/stripe.js";
  
 const router = express.Router();
  
@@ -28,5 +28,6 @@ router.delete('/projects/:id', deleteProject);
 
 router.post('/stripe/charge', chargeStripe);
 router.get('/stripe/customer', newCustomer);
+router.post('/stripe/intent', createIntent);
  
 export default router;

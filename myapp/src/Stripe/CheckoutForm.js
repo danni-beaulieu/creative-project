@@ -13,6 +13,8 @@ export const CheckoutForm = () => {
   const elements = useElements();
   let userid = cookies.userid;
   let customerid = cookies.customerid;
+  let payerror = false;
+  let secret = '';
 
   const updateUser = async () => {
     await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
@@ -42,34 +44,70 @@ export const CheckoutForm = () => {
     }
 
     console.log(customerid);
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement)
-    });
 
-    if (!error) {
-        console.log("Stripe 23 | token generated!", paymentMethod);
-        console.log("Amount: " + amount);
-        try {
-          const { id } = paymentMethod;
-          const response = await axios.post(
-            "http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/charge",
-            {
-              amount: amount,
-              id: id,
-            }
-          );
-  
-          console.log("Stripe 35 | data", response.data.success);
-          if (response.data.success) {
-            console.log("CheckoutForm.js 25 | payment successful!");
-          }
-        } catch (error) {
-          console.log("CheckoutForm.js 28 | ", error);
-        }
-      } else {
-        console.log(error.message);
+    try {
+      const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
+        {
+          customerid:customerid,
+          amount:amount
+        });
+
+      console.log("Stripe 49 | data", response.data.success);
+      if (response.data.success) {
+        console.log("CheckoutForm.js 51 | intent successful!" + JSON.stringify(response.data));
+        secret = response.data.secret;
+        console.log(secret);
       }
+    } catch (error) {
+      payerror = true;
+      console.log("CheckoutForm.js 29 | ", error, payerror);
+    }
+
+    if (!payerror) {
+      try {
+          const payload = await stripe.confirmCardPayment(secret, {
+            payment_method: {
+              card: elements.getElement(CardElement)
+            },
+          });
+          if (payload.error) {
+            console.log(`Payment failed ${payload.error.message}`);
+          } else {
+            console.log(`Payment succeeded ${JSON.stringify(payload)}`);
+          }
+      } catch (error) {
+        console.log("CheckoutForm.js 80 | ", error);
+      }
+    }
+
+    // const { error, paymentMethod } = await stripe.createPaymentMethod({
+    //   type: "card",
+    //   card: elements.getElement(CardElement)
+    // });
+
+    // if (!error) {
+    //     console.log("Stripe 23 | token generated!", paymentMethod);
+    //     console.log("Amount: " + amount);
+    //     try {
+    //       const { id } = paymentMethod;
+    //       const response = await axios.post(
+    //         "http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/charge",
+    //         {
+    //           amount: amount,
+    //           id: id,
+    //         }
+    //       );
+  
+    //       console.log("Stripe 35 | data", response.data.success);
+    //       if (response.data.success) {
+    //         console.log("CheckoutForm.js 25 | payment successful!");
+    //       }
+    //     } catch (error) {
+    //       console.log("CheckoutForm.js 28 | ", error);
+    //     }
+    //   } else {
+    //     console.log(error.message);
+    //   }
     };
 
   return (

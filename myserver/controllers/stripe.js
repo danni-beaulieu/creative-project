@@ -31,6 +31,33 @@ export const chargeStripe = async (req, res) => {
     }
   }
 
+  export const createIntent = async (req, res) => {
+    console.log("stripe-routes.js 35 | route reached", req.body);
+    let { customerid, amount } = req.body;
+    console.log("stripe-routes.js 37 | amount and cid", amount, customerid);
+
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount, 
+        currency: "usd",
+        customer: customerid, 
+        setup_future_usage: 'on_session'
+      });
+      console.log("stripe-routes.js 49 | intent", JSON.stringify(paymentIntent));
+      res.json({
+        secret: paymentIntent.client_secret,
+        message: "Intent Successful",
+        success: true,
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 53 | error", error);
+      res.json({
+        message: "Intent Failed",
+        success: false,
+      });
+    }
+  }
+
   export const newCustomer = async (req, res) => {
     
     console.log("stripe-routes.js 36 | route reached", req.body);
