@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 export const CheckoutForm = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
   const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState('');
   // const [customerid, setCustomerID] = useState(cookies.customerid);
   // const [userid, setUserID] = useState(cookies.userid);
   const stripe = useStripe();
@@ -15,6 +16,11 @@ export const CheckoutForm = () => {
   let customerid = cookies.customerid;
   let payerror = false;
   let secret = '';
+  let methods = [
+    {id: "pm_1KrQcOJaDc0P8cfzyIrYOopi", four: "4242"},
+    {id: "pm_1KrQ85JaDc0P8cfzIYTPPckU", four: "4242"},
+    {id: "pm_1KrQ73JaDc0P8cfzeLsna0i8", four: "4242"}
+ ];
 
   const updateUser = async () => {
     await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
@@ -64,17 +70,29 @@ export const CheckoutForm = () => {
     }
 
     if (!payerror) {
+
       try {
+        if (method == "0") {
           const payload = await stripe.confirmCardPayment(secret, {
             payment_method: {
               card: elements.getElement(CardElement)
-            },
+            }
           });
           if (payload.error) {
             console.log(`Payment failed ${payload.error.message}`);
           } else {
             console.log(`Payment succeeded ${JSON.stringify(payload)}`);
           }
+        } else {
+          const payload = await stripe.confirmCardPayment(secret, {
+            payment_method: method
+          });
+          if (payload.error) {
+            console.log(`Payment failed ${payload.error.message}`);
+          } else {
+            console.log(`Payment succeeded ${JSON.stringify(payload)}`);
+          }
+        }
       } catch (error) {
         console.log("CheckoutForm.js 80 | ", error);
       }
@@ -116,6 +134,27 @@ export const CheckoutForm = () => {
     <div className="column is-half is-offset-one-quarter">
     <div>
     <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
+    <div className="control">
+
+      { methods.map((pm) => (
+              <label key={ pm.id } className="radio">
+              <input 
+                key={ pm.id } 
+                type="radio" 
+                name="saved_cards_radio" 
+                value={ pm.id }
+                onChange={ (e) => setMethod(e.target.value) }
+                />
+                  { pm.four }
+            </label>
+      )) }
+
+      <label className="radio">
+        <input type="radio" name="saved_cards_radio" defaultChecked value="0" onChange={ (e) => setMethod(e.target.value) }/>
+        Add
+      </label>
+      </div>
+
       <div className="field">
         <label className="label">Amount</label>
         <input 

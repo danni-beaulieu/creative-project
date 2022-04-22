@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie";
 import StripeContainer from "../Stripe/StripeContainer";
  
 const ViewProjects = () => {
-    const [projects, setProject] = useState([]);
+    const [projects, setProjects] = useState([]);
     const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
  
     useEffect(() => {
@@ -14,7 +14,7 @@ const ViewProjects = () => {
  
     const getProjects = async () => {
         const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects');
-        setProject(response.data);
+        setProjects(response.data);
     }
  
     const deleteProject = async (id) => {
