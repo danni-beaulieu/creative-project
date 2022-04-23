@@ -20,7 +20,7 @@ const ViewMethods = () => {
         let pms = new Array();
         let cards = response.data.methods.data;
         for (let pm in cards) {
-          let newPM = {id: cards[pm].id, four: cards[pm].card.last4};
+          let newPM = {id: cards[pm].id, four: cards[pm].card.last4, month: cards[pm].card.exp_month, year: cards[pm].card.exp_year};
           pms.push(newPM);
         }
         console.log(JSON.stringify(pms));
@@ -42,6 +42,8 @@ const ViewMethods = () => {
                     <tr>
                         <th>No</th>
                         <th>Last Four</th>
+                        <th>Exp Month</th>
+                        <th>Exp Year</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +51,8 @@ const ViewMethods = () => {
                         <tr key={ method.id }>
                             <td>{ index + 1 }</td>
                             <td>{ method.four }</td>
+                            <td>{ method.month }</td>
+                            <td>{ method.year }</td>
                             <td>
                                 <><Link to={`/methods/edit/${method.id}`} className="button is-small is-info">Edit</Link>
                                 <button onClick={() => deleteMethod(method.id)} className="button is-small is-danger">Delete</button></>

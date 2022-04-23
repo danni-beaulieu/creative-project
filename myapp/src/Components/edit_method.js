@@ -3,17 +3,16 @@ import axios from "axios";
 import { useNavigate, useParams } from 'react-router-dom';
  
 const EditMethod = () => {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
  
     const updateMethod = async (e) => {
         e.preventDefault();
-        // await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`,{
-        //     title: title,
-        //     description: description
-        // });
+        await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/method/${id}`,{
+            card: {exp_month: month, exp_year: year}
+        });
         navigate("/methods");
     }
  
@@ -22,9 +21,11 @@ const EditMethod = () => {
     }, []);
  
     const getMethodById = async () => {
-        // const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`);
-        // setTitle(response.data.title);
-        // setDescription(response.data.description);
+        const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/method/${id}`);
+        let card = response.data.card;
+        console.log(JSON.stringify(response.data.card));
+        setMonth(card.exp_month);
+        setYear(card.exp_year);
     }
  
     return (
@@ -34,24 +35,24 @@ const EditMethod = () => {
         <div>
             <form onSubmit={ updateMethod }>
                 <div className="field">
-                    <label className="label">Title</label>
+                    <label className="label">Exp Month</label>
                     <input 
                         className="input"
                         type="text"
-                        placeholder="Title"
-                        value={ title }
-                        onChange={ (e) => setTitle(e.target.value) }
+                        placeholder="Month"
+                        value={ month }
+                        onChange={ (e) => setMonth(e.target.value) }
                     />
                 </div>
  
                 <div className="field">
-                    <label className="label">Description</label>
+                    <label className="label">Exp Year</label>
                     <input 
                         className="input"
                         type="text"
-                        placeholder="Description"
-                        value={ description }
-                        onChange={ (e) => setDescription(e.target.value) }
+                        placeholder="Year"
+                        value={ year }
+                        onChange={ (e) => setYear(e.target.value) }
                     />
                 </div>
  

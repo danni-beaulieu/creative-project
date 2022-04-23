@@ -4,7 +4,6 @@ dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_TEST);
 
 export const chargeStripe = async (req, res) => {
-    
     console.log("stripe-routes.js 9 | route reached", req.body);
     let { amount, id } = req.body;
     console.log("stripe-routes.js 10 | amount and id", amount, id);
@@ -65,7 +64,6 @@ export const chargeStripe = async (req, res) => {
   }
 
   export const newCustomer = async (req, res) => {
-    
     console.log("stripe-routes.js 36 | route reached", req.body);
 
     try {
@@ -86,16 +84,11 @@ export const chargeStripe = async (req, res) => {
   }
 
   export const getMethods = async (req, res) => {
-    
     console.log("stripe-routes.js 90 | route reached", req.params.id);
     let customerid = req.params.id;
-
     console.log(customerid);
+
     try {
-      // const customer = await stripe.customers.retrieve(
-      //   customerid,
-      //   { expand: ['sources'] }
-      // );
       const paymentMethods = await stripe.customers.listPaymentMethods(
         customerid,
         {type: 'card'}
@@ -119,6 +112,7 @@ export const chargeStripe = async (req, res) => {
   export const deleteMethod = async (req, res) => {
     console.log("stripe-routes.js 121 | route reached", req.params.id);
     let methodid = req.params.id;
+
     try {
       const paymentMethod = await stripe.paymentMethods.detach(
         methodid
@@ -141,6 +135,7 @@ export const chargeStripe = async (req, res) => {
     console.log("stripe-routes.js 142 | route reached", req.params.id);
     let methodid = req.params.id;
     let methodupdate = req.body;
+
     try {
       const paymentMethod = await stripe.paymentMethods.update(
         methodid,
@@ -156,6 +151,29 @@ export const chargeStripe = async (req, res) => {
       res.json({
         message: "Update Failed",
         success: false,
+      });
+    }
+  }
+
+  export const getMethod = async (req, res) => {
+    console.log("stripe-routes.js 159 | route reached", req.params.id);
+    let methodid = req.params.id;
+    
+    try {
+      const paymentMethod = await stripe.paymentMethods.retrieve(
+        methodid
+      );
+      console.log(JSON.stringify(paymentMethod));
+      res.json({
+        message: "Method Successful",
+        success: true,
+        card: paymentMethod.card
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 172 | error", error);
+      res.json({
+        message: "Method Failed",
+        success: false
       });
     }
   }
