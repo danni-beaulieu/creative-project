@@ -5,12 +5,13 @@ import { useCookies } from "react-cookie";
  
 const Navbar = () => {
     const navigate = useNavigate();
-    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
+    const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
  
     const Logout = async () => {
         try {
             await axios.delete('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/logout');
             removeCookie("userid");
+            removeCookie("customerid");
             navigate("/");
         } catch (error) {
             console.log(error);

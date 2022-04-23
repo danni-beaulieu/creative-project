@@ -85,24 +85,31 @@ export const chargeStripe = async (req, res) => {
     }
   }
 
-  export const getCustomer = async (req, res) => {
+  export const getCustomerById = async (req, res) => {
     
-    console.log("stripe-routes.js 90 | route reached", req.body);
-    let { customerid } = req.body;
+    console.log("stripe-routes.js 90 | route reached", req.params.id);
+    let customerid = req.params.id;
 
+    console.log(customerid);
     try {
-      const customer = await stripe.customers.retrieve(
+      // const customer = await stripe.customers.retrieve(
+      //   customerid,
+      //   { expand: ['sources'] }
+      // );
+      const paymentMethods = await stripe.customers.listPaymentMethods(
         customerid,
-        
+        {type: 'card'}
       );
-      console.log("stripe-routes.js 90 | customer", customer.id);
+      console.log(JSON.stringify(paymentMethods));
+      // console.log("stripe-routes.js 99 | customer", JSON.stringify(customer));
       res.json({
         message: "Customer Successful",
         success: true,
-        customerid: customer.id
+        customerid: customerid,
+        methods: paymentMethods
       });
     } catch (error) {
-      console.log("stripe-routes.js 101 | error", error);
+      console.log("stripe-routes.js 105 | error", error);
       res.json({
         message: "Customer Failed",
         success: false,

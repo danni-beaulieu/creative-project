@@ -7,35 +7,49 @@ import { useCookies } from "react-cookie";
 export const CheckoutForm = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('');
+  const [method, setMethod] = useState('0');
+  const [methods, setMethods] = useState([]);
   // const [customerid, setCustomerID] = useState(cookies.customerid);
   // const [userid, setUserID] = useState(cookies.userid);
   const stripe = useStripe();
   const elements = useElements();
   let userid = cookies.userid;
   let customerid = cookies.customerid;
-  let payerror = false;
-  let secret = '';
-  let methods = [
-    {id: "pm_1KrQcOJaDc0P8cfzyIrYOopi", four: "4242"},
-    {id: "pm_1KrQ85JaDc0P8cfzIYTPPckU", four: "4242"},
-    {id: "pm_1KrQ73JaDc0P8cfzeLsna0i8", four: "4242"}
- ];
+
+  useEffect(() => {
+    getPaymentMethods();
+  }, []);
+
+  const getPaymentMethods = async () => {
+    console.log(customerid);
+    const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer/${customerid}`);
+    console.log(JSON.stringify(response.data));
+    let pms = new Array();
+    let cards = response.data.methods.data;
+    for (let pm in cards) {
+      let newPM = {id: cards[pm].id, four: cards[pm].card.last4};
+      pms.push(newPM);
+    }
+    console.log(JSON.stringify(pms));
+    setMethods(pms);
+  }
 
   const updateUser = async () => {
     await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
         customer_id: customerid
     });
-}
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(typeof userid);
     console.log(typeof customerid);
+    let secret = '';
+    let payerror = false;
 
     if (customerid == null || customerid == '' || customerid == "null") {
       try {
-        const response = await axios.get("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
+        const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
 
         console.log("Stripe 22 | data", response.data.success);
         if (response.data.success) {
@@ -72,6 +86,7 @@ export const CheckoutForm = () => {
     if (!payerror) {
 
       try {
+        console.log(method);
         if (method == "0") {
           const payload = await stripe.confirmCardPayment(secret, {
             payment_method: {
@@ -97,36 +112,7 @@ export const CheckoutForm = () => {
         console.log("CheckoutForm.js 80 | ", error);
       }
     }
-
-    // const { error, paymentMethod } = await stripe.createPaymentMethod({
-    //   type: "card",
-    //   card: elements.getElement(CardElement)
-    // });
-
-    // if (!error) {
-    //     console.log("Stripe 23 | token generated!", paymentMethod);
-    //     console.log("Amount: " + amount);
-    //     try {
-    //       const { id } = paymentMethod;
-    //       const response = await axios.post(
-    //         "http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/charge",
-    //         {
-    //           amount: amount,
-    //           id: id,
-    //         }
-    //       );
-  
-    //       console.log("Stripe 35 | data", response.data.success);
-    //       if (response.data.success) {
-    //         console.log("CheckoutForm.js 25 | payment successful!");
-    //       }
-    //     } catch (error) {
-    //       console.log("CheckoutForm.js 28 | ", error);
-    //     }
-    //   } else {
-    //     console.log(error.message);
-    //   }
-    };
+  };
 
   return (
     <div className="container">
