@@ -85,7 +85,7 @@ export const chargeStripe = async (req, res) => {
     }
   }
 
-  export const getCustomerById = async (req, res) => {
+  export const getMethods = async (req, res) => {
     
     console.log("stripe-routes.js 90 | route reached", req.params.id);
     let customerid = req.params.id;
@@ -101,7 +101,6 @@ export const chargeStripe = async (req, res) => {
         {type: 'card'}
       );
       console.log(JSON.stringify(paymentMethods));
-      // console.log("stripe-routes.js 99 | customer", JSON.stringify(customer));
       res.json({
         message: "Customer Successful",
         success: true,
@@ -112,6 +111,50 @@ export const chargeStripe = async (req, res) => {
       console.log("stripe-routes.js 105 | error", error);
       res.json({
         message: "Customer Failed",
+        success: false,
+      });
+    }
+  }
+
+  export const deleteMethod = async (req, res) => {
+    console.log("stripe-routes.js 121 | route reached", req.params.id);
+    let methodid = req.params.id;
+    try {
+      const paymentMethod = await stripe.paymentMethods.detach(
+        methodid
+      );
+      console.log(JSON.stringify(paymentMethod));
+      res.json({
+        message: "Delete Successful",
+        success: true,
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 126 | error", error);
+      res.json({
+        message: "Delete Failed",
+        success: false,
+      });
+    }
+  }
+
+  export const updateMethod = async (req, res) => {
+    console.log("stripe-routes.js 142 | route reached", req.params.id);
+    let methodid = req.params.id;
+    let methodupdate = req.body;
+    try {
+      const paymentMethod = await stripe.paymentMethods.update(
+        methodid,
+        methodupdate
+      );
+      console.log(JSON.stringify(paymentMethod));
+      res.json({
+        message: "Update Successful",
+        success: true,
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 156 | error", error);
+      res.json({
+        message: "Update Failed",
         success: false,
       });
     }

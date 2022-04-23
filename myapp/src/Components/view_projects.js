@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import StripeContainer from "../Stripe/StripeContainer";
  
 const ViewProjects = () => {
     const [projects, setProjects] = useState([]);
