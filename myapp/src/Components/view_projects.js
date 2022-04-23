@@ -46,6 +46,7 @@ const ViewProjects = () => {
                             <Link to={`/projects/donate/${project.id}`} className="button is-small is-link">Donate</Link>
                             { project.user_id == cookies.userid ? 
                                 <><Link to={`/projects/edit/${project.id}`} className="button is-small is-info">Edit</Link>
+                                <Link to={`/collaborators/${project.id}`} className="button is-small is-warning">Collaborators</Link>
                                 <button onClick={() => deleteProject(project.id)} className="button is-small is-danger">Delete</button></>
                             : null }
                             </td>

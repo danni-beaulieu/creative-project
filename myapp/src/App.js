@@ -1,13 +1,3 @@
-
-// const App = () => {
-//   return (
-//     <div className="App">
-//       <h2>Hello World</h2>
-//       <StripeContainer />
-//     </div>
-//   );
-// };
-
 import React from "react";
 import StripeContainer from "./Stripe/StripeContainer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -20,6 +10,7 @@ import EditMethod from "./Components/edit_method";
 import ViewProjects from "./Components/view_projects";
 import CreateProject from "./Components/create_project";
 import EditProject from "./Components/edit_project";
+import AddCollaborator from "./Components/add_collaborators";
  
 function App() {
   return (
@@ -34,6 +25,7 @@ function App() {
           <Route path="/projects/create" element={<CreateProject/>}></Route>
           <Route path="/projects/edit/:id" element={<EditProject/>}></Route>
           <Route path="/projects/donate/:id" element={<StripeContainer/>}></Route>
+          <Route path="/collaborators/:id" element={<AddCollaborator />}></Route>
         </Routes>
     </BrowserRouter>
   );

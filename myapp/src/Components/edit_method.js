@@ -10,9 +10,10 @@ const EditMethod = () => {
  
     const updateMethod = async (e) => {
         e.preventDefault();
-        await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/method/${id}`,{
+        const response = await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/method/${id}`,{
             card: {exp_month: month, exp_year: year}
         });
+        console.log(JSON.stringify(response));
         navigate("/methods");
     }
  

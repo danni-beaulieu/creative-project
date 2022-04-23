@@ -10,10 +10,11 @@ const EditProject = () => {
  
     const updateProject = async (e) => {
         e.preventDefault();
-        await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`,{
+        const response = await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`,{
             title: title,
             description: description
         });
+        console.log(JSON.stringify(response.data));
         navigate("/projects");
     }
  
@@ -23,6 +24,7 @@ const EditProject = () => {
  
     const getProjectById = async () => {
         const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`);
+        console.log(JSON.stringify(response.data));
         setTitle(response.data.title);
         setDescription(response.data.description);
     }
