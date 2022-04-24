@@ -1,8 +1,13 @@
 import Project from "../models/project.js";
+import Collaborator from "../models/collaborator.js";
  
 export const getAllProjects = async (req, res) => {
     try {
-        const Projects = await Project.findAll();
+        const Projects = await Project.findAll({
+            include: [{
+              model: Collaborator
+             }]
+        });
         res.json(Projects);
     } catch (error) {
         res.json({ message: error.message });

@@ -13,12 +13,29 @@ const ViewProjects = () => {
  
     const getProjects = async () => {
         const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects');
+        console.log(response.data);
         setProjects(response.data);
     }
  
     const deleteProject = async (id) => {
         await axios.delete(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`);
         getProjects();
+    }
+
+    function userAllowed (projectid) {
+        let p = projects.find(i => i.id === projectid);
+
+        let isCollaborator = false;
+        for (let c in p.collaborators) {
+            if (p.collaborators[c].collaborator_id == cookies.userid) {
+                isCollaborator = true;
+            }
+        }
+        if (p.user_id == cookies.userid || isCollaborator) {
+            return true;
+        } else {
+            return false;
+        }
     }
  
     return (
@@ -44,11 +61,15 @@ const ViewProjects = () => {
                             <td>{ project.description }</td>
                             <td>
                             <Link to={`/projects/donate/${project.id}`} className="button is-small is-link">Donate</Link>
-                            { project.user_id == cookies.userid ? 
+                            { (userAllowed(project.id)) ? 
                                 <><Link to={`/projects/edit/${project.id}`} className="button is-small is-info">Edit</Link>
                                 <Link to={`/collaborators/${project.id}`} className="button is-small is-warning">Collaborators</Link>
-                                <button onClick={() => deleteProject(project.id)} className="button is-small is-danger">Delete</button></>
+                                </>
                             : null }
+                            { cookies.userid == project.user_id ? 
+                                <button onClick={() => deleteProject(project.id)} className="button is-small is-danger">Delete</button>
+                                : null
+                            }
                             </td>
                         </tr>
                     )) }
