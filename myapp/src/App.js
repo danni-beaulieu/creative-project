@@ -11,12 +11,13 @@ import ViewProjects from "./Components/view_projects";
 import CreateProject from "./Components/create_project";
 import EditProject from "./Components/edit_project";
 import AddCollaborator from "./Components/add_collaborators";
+import ViewDonations from "./Components/view_donations";
  
 function App() {
   return (
     <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={<Login />}></Route>
+          <Route path="/" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/dashboard" element={<><Navbar/><Dashboard/></>}></Route>
           <Route path="/projects" element={<ViewProjects/>}></Route>
@@ -26,6 +27,7 @@ function App() {
           <Route path="/projects/edit/:id" element={<EditProject/>}></Route>
           <Route path="/projects/donate/:id" element={<StripeContainer/>}></Route>
           <Route path="/collaborators/:id" element={<AddCollaborator />}></Route>
+          <Route path="/donations" element={<ViewDonations />}></Route>
         </Routes>
     </BrowserRouter>
   );

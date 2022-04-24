@@ -22,7 +22,7 @@ import { chargeStripe,
   getMethod } from "../controllers/stripe.js";
 import { createCollaborator, 
   getAllCollaborators } from "../controllers/collaborators.js";
-import { makeDonation } from "../controllers/donations.js";
+import { makeDonation, getDonationsByCustomerId } from "../controllers/donations.js";
  
 const router = express.Router();
  
@@ -42,6 +42,7 @@ router.delete('/projects/:id', deleteProject);
 router.get('/collaborators', getAllCollaborators);
 router.post('/collaborators', createCollaborator);
 
+router.get('/donations/:id', getDonationsByCustomerId);
 router.post('/donations', makeDonation);
 
 router.post('/stripe/charge', chargeStripe);
