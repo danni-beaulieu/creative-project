@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import Donation from "./donation.js";
  
 const { DataTypes } = Sequelize;
  
@@ -31,5 +32,9 @@ const Users = db.define('users',{
         console.log(error);
     }
 })();
+
+Users.hasMany(Donation, {
+    foreignKey: 'user_id'
+  });
  
 export default Users;

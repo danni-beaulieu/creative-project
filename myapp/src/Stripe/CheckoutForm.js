@@ -2,6 +2,7 @@ import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 
 export const CheckoutForm = () => {
@@ -9,8 +10,7 @@ export const CheckoutForm = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('0');
   const [methods, setMethods] = useState([]);
-  // const [customerid, setCustomerID] = useState(cookies.customerid);
-  // const [userid, setUserID] = useState(cookies.userid);
+  const { id } = useParams();
   const stripe = useStripe();
   const elements = useElements();
   let userid = cookies.userid;
@@ -37,6 +37,14 @@ export const CheckoutForm = () => {
   const updateUser = async () => {
     await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
         customer_id: customerid
+    });
+  }
+
+  const makeDonation = async () => {
+    await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations",{
+      project_id: id,
+      user_id: cookies.userid,
+      amount: amount
     });
   }
 
@@ -84,7 +92,7 @@ export const CheckoutForm = () => {
     }
 
     if (!payerror) {
-
+      console.log(id);
       try {
         console.log(method);
         if (method == "0") {
@@ -97,6 +105,7 @@ export const CheckoutForm = () => {
             console.log(`Payment failed ${payload.error.message}`);
           } else {
             console.log(`Payment succeeded ${JSON.stringify(payload)}`);
+            makeDonation();
           }
         } else {
           const payload = await stripe.confirmCardPayment(secret, {
@@ -106,6 +115,7 @@ export const CheckoutForm = () => {
             console.log(`Payment failed ${payload.error.message}`);
           } else {
             console.log(`Payment succeeded ${JSON.stringify(payload)}`);
+            makeDonation();
           }
         }
       } catch (error) {

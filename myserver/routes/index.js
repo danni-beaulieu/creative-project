@@ -1,5 +1,9 @@
 import express from "express";
-import { getUsers, Register, Login, Logout, updateUser } from "../controllers/users.js";
+import { getUsers, 
+  Register, 
+  Login, 
+  Logout, 
+  updateUser } from "../controllers/users.js";
 import { verifyToken } from "../middleware/verify.js";
 import { refreshToken } from "../controllers/refresh.js";
 import { 
@@ -18,6 +22,7 @@ import { chargeStripe,
   getMethod } from "../controllers/stripe.js";
 import { createCollaborator, 
   getAllCollaborators } from "../controllers/collaborators.js";
+import { makeDonation } from "../controllers/donations.js";
  
 const router = express.Router();
  
@@ -36,6 +41,8 @@ router.delete('/projects/:id', deleteProject);
 
 router.get('/collaborators', getAllCollaborators);
 router.post('/collaborators', createCollaborator);
+
+router.post('/donations', makeDonation);
 
 router.post('/stripe/charge', chargeStripe);
 router.post('/stripe/customer', newCustomer);
