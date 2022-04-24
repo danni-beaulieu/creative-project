@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import jwt_decode from "jwt-decode";
+import Select from 'react-select';
 
 const AddCollaborator = () => {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ const AddCollaborator = () => {
     const [token, setToken] = useState('');
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
-    const [collaboratorid, setCollaboratorID] = useState('1');
+    const [collaborator, setCollaboratorID] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
  
     useEffect(() => {
@@ -86,11 +87,11 @@ const AddCollaborator = () => {
 
     const addCollaborator = async (e) => {
         e.preventDefault();
-        console.log(collaboratorid);
+        console.log(collaborator);
         try {
             await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/collaborators', {
                 project_id: id,
-                collaborator_id: collaboratorid
+                collaborator_id: collaborator.value
             });
             console.log("Successful add!")
             navigate("/projects");
@@ -111,11 +112,17 @@ const AddCollaborator = () => {
                             <form onSubmit={addCollaborator} className="box">
                                 <p className="has-text-centered">{msg}</p>
                                 <div className="field mt-5">
-                                    <select value={collaboratorid} onChange={(e) => setCollaboratorID(e.target.value)}>
-                                        {users.map((user) => (
-                                            <option value={user.id} key={user.id}>{user.login_name}</option>
-                                        ))}
-                                    </select>
+                                    <Select
+                                        defaultValue={collaborator}
+                                        onChange={setCollaboratorID}
+                                        options={users.map((user, index) => {
+                                            return {
+                                              label: user.login_name,
+                                              value: user.id,
+                                              key: index
+                                            };
+                                          })}
+                                    />
                                 </div>
                                 <div className="field mt-5">
                                     <button className="button is-success is-fullwidth">Add</button>
