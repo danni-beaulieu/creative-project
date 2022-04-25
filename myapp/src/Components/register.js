@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
  
 const Register = () => {
     const [display, setDisplay] = useState('');
     const [password, setPassword] = useState('');
+    const [login, setLogin] = useState('');
     const [confPassword, setConfPassword] = useState('');
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
@@ -12,13 +13,14 @@ const Register = () => {
     const Register = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
+            const response = await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
                 display: display,
                 password: password,
                 confPassword: confPassword
             });
+            setLogin(response.data.login);
             console.log("Successful register!")
-            navigate("/");
+            // navigate("/login");
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);
@@ -34,6 +36,7 @@ const Register = () => {
                         <div className="column is-4-desktop">
                             <form onSubmit={Register} className="box">
                                 <p className="has-text-centered">{msg}</p>
+                                <p className="has-text-centered">{login}</p>
                                 <div className="field mt-5">
                                     <label className="label">Display Name</label>
                                     <div className="controls">
@@ -55,6 +58,7 @@ const Register = () => {
                                 <div className="field mt-5">
                                     <button className="button is-success is-fullwidth">Register</button>
                                 </div>
+                                <Link to={`/login`} className="button is-fullwidth is-link">Login</Link>
                             </form>
                         </div>
                     </div>

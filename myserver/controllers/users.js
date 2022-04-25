@@ -17,22 +17,27 @@ export const getUsers = async(req, res) => {
 export const Register = async(req, res) => {
     const { display, password, confPassword } = req.body;
     if(password !== confPassword) return res.status(400).json({msg: "Password and Confirm Password do not match"});
-    
+
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
     const [results, metadata] = await db.query("SELECT auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wustl' AND TABLE_NAME = 'users';");
     console.log(JSON.stringify(results));
 
-    let newLogin = results[0].auto_increment + display;
+    let newLogin = display + results[0].auto_increment;
 
     try {
-        await Users.create({
+        const newUser = await Users.create({
             login_name: newLogin,
             display_name: display,
             password: hashPassword
         });
         console.log("Registration Successful");
-        res.json({msg: "Registration Successful"});
+        console.log(JSON.stringify(newUser));
+        res.json({
+            msg: "Registration Successful",
+            success: true,
+            login: newUser.login_name
+        });
     } catch (error) {
         console.log("Error Registering");
         console.log(error);
