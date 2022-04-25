@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
  
 const Navbar = () => {
     const navigate = useNavigate();
+    const [isActive, setIsActive] = useState(false);
     const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
  
     const Logout = async () => {
@@ -12,7 +13,7 @@ const Navbar = () => {
             await axios.delete('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/logout');
             removeCookie("userid");
             removeCookie("customerid");
-            navigate("/");
+            navigate("/login");
         } catch (error) {
             console.log(error);
         }
@@ -26,16 +27,18 @@ const Navbar = () => {
                         <img src="pngegg.png" width="85" height="85" alt="logo" />
                     </a>
  
-                    <a href="/" role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
+                    <a onClick={() => {setIsActive(!isActive);}} role="button" 
+                        className={`navbar-burger burger ${isActive ? "is-active" : ""}`} 
+                        aria-label="menu" aria-expanded="false" data-target="my-nav">
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
                     </a>
                 </div>
  
-                <div className="navbar-menu">
+                <div id="my-nav" className={`navbar-menu ${isActive ? "is-active" : ""}`}>
                     <div className="navbar-start">
-                        <a href="/projects" className="navbar-item">
+                        <a href="/" className="navbar-item">
                             Home
                         </a>
                         <a href="/users" className="navbar-item">

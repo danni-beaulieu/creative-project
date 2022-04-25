@@ -34,11 +34,11 @@ router.post('/login', Login);
 router.get('/token', refreshToken);
 router.delete('/logout', Logout);
 
-router.get('/projects', getAllProjects);
+router.get('/projects', verifyToken, getAllProjects);
 router.get('/projects/:id', getProjectById);
 router.post('/projects', createProject);
 router.patch('/projects/:id', updateProject);
-router.delete('/projects/:id', deleteProject);
+router.delete('/projects/:id', verifyToken, deleteProject);
 
 router.get('/collaborators', getAllCollaborators);
 router.post('/collaborators', createCollaborator);

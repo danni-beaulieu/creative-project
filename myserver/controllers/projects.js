@@ -16,13 +16,11 @@ export const getAllProjects = async (req, res) => {
  
 export const getProjectById = async (req, res) => {
     try {
-        console.log("projects | 14: ", req.params.id);
         const Projects = await Project.findAll({
             where: {
                 id: req.params.id
             }
         });
-        console.log("projects | 20", Projects[0]);
         res.json(Projects[0]);
     } catch (error) {
         res.json({ message: error.message });

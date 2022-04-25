@@ -14,7 +14,7 @@ function useRefesh() {
         } catch (error) {
             console.log("auth_context.refreshToken error:" + error);
             if (error.response) {
-                navigate("/");
+                navigate("/login");
             }
         }
     } 

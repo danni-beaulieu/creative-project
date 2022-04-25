@@ -2,14 +2,15 @@ import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 
 export const CheckoutForm = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
+  const [cookies, setCookie] = useCookies(["userid", "customerid"]);
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('0');
   const [methods, setMethods] = useState([]);
+  const navigate = useNavigate();
   const { id } = useParams();
   const stripe = useStripe();
   const elements = useElements();
@@ -41,11 +42,15 @@ export const CheckoutForm = () => {
   }
 
   const makeDonation = async () => {
-    await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations",{
+    const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations",{
       project_id: id,
       user_id: cookies.userid,
       amount: amount
     });
+    console.log(JSON.stringify(response))
+    if (response.data.success) {
+      navigate("/");
+    }
   }
 
   const handleSubmit = async (event) => {
@@ -59,9 +64,7 @@ export const CheckoutForm = () => {
       try {
         const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
 
-        console.log("Stripe 22 | data", response.data.success);
         if (response.data.success) {
-          console.log("CheckoutForm.js 24 | customer successful!" + JSON.stringify(response.data));
           customerid = response.data.customerid;
           setCookie("customerid", customerid, { path: '/' });
           updateUser();
@@ -80,11 +83,8 @@ export const CheckoutForm = () => {
           amount:amount
         });
 
-      console.log("Stripe 49 | data", response.data.success);
       if (response.data.success) {
-        console.log("CheckoutForm.js 51 | intent successful!" + JSON.stringify(response.data));
         secret = response.data.secret;
-        console.log(secret);
       }
     } catch (error) {
       payerror = true;
@@ -92,9 +92,7 @@ export const CheckoutForm = () => {
     }
 
     if (!payerror) {
-      console.log(id);
       try {
-        console.log(method);
         if (method == "0") {
           const payload = await stripe.confirmCardPayment(secret, {
             payment_method: {

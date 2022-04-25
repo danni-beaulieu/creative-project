@@ -71,7 +71,7 @@ export const Login = async(req, res) => {
         });
         res.json({ accessToken });
     } catch (error) {
-        console.log(error);
+        // Not Found
         res.status(404).json({msg:"Login name not found"});
     }
 }

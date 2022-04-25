@@ -21,7 +21,8 @@ function App() {
     <AuthContext.Provider value={[auth, setAuth]}>
     <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />}></Route>
+          <Route path="/" element={<><Navbar/><ViewProjects/></>}></Route>
+          <Route path="/login" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/projects" element={<><Navbar/><ViewProjects/></>}></Route>
           <Route path="/methods" element={<><Navbar/><ViewMethods/></>}></Route>

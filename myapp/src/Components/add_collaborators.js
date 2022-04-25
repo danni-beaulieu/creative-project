@@ -43,7 +43,7 @@ const AddCollaborator = () => {
         } catch (error) {
             console.log("dashboard.refreshToken error:" + error);
             if (error.response) {
-                navigate("/");
+                navigate("/login");
             }
         }
     }

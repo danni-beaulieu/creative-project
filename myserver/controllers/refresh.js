@@ -10,7 +10,7 @@ export const refreshToken = async(req, res) => {
             return res.sendStatus(401);
         }
 
-        // Get user associated to tokenn
+        // Get user associated to token
         const user = await Users.findAll({
             where:{
                 refresh_jwt: refreshToken

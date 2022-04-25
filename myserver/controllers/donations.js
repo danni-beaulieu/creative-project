@@ -7,7 +7,8 @@ export const makeDonation = async (req, res) => {
     try {
         await Donation.create(req.body);
         res.json({
-            "message": "Donation Created"
+            success: true,
+            message: "Donation Created"
         });
     } catch (error) {
         res.json({ message: error.message });

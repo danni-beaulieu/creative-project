@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import jwt_decode from "jwt-decode";
+import jwt from './use_jwt';
 import { AuthContext, useRefesh } from "./auth_context";
  
 const ViewProjects = () => {
@@ -12,7 +13,11 @@ const ViewProjects = () => {
     const [userid, customerid, display] = useRefesh();
 
     const getProjects = async () => {
-        const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects');
+        const response = await jwt.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects', {
+            headers: {
+                Authorization: `Bearer ${auth}`
+            }
+        });
         console.log(response.data);
         setProjects(response.data);
     }
@@ -28,7 +33,11 @@ const ViewProjects = () => {
     }, [auth, setCookie, userid, customerid, display]);
  
     const deleteProject = async (id) => {
-        await axios.delete(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`);
+        await jwt.delete(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`, {
+            headers: {
+                Authorization: `Bearer ${auth}`
+            }
+        });
         getProjects();
     }
 
