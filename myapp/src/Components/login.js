@@ -12,12 +12,11 @@ const Login = () => {
         e.preventDefault();
         console.log("posting to login...")
         try {
-            const response = await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/login', {
+            await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/login', {
                 login: login,
                 password: password
             });
-            console.log(JSON.stringify(response));
-            navigate("/dashboard");
+            navigate("/projects");
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);

@@ -22,7 +22,8 @@ import { chargeStripe,
   getMethod } from "../controllers/stripe.js";
 import { createCollaborator, 
   getAllCollaborators } from "../controllers/collaborators.js";
-import { makeDonation, getDonationsByCustomerId } from "../controllers/donations.js";
+import { makeDonation, 
+  getDonationsByCustomerId } from "../controllers/donations.js";
  
 const router = express.Router();
  

@@ -34,33 +34,44 @@ export const Register = async(req, res) => {
  
 export const Login = async(req, res) => {
     try {
+        console.log("Login: " + req.body.login);
         const user = await Users.findAll({
             where:{
                 login_name: req.body.login
             }
         });
+
+        console.log(JSON.stringify(user));
         const match = await bcrypt.compare(req.body.password, user[0].password);
-        if(!match) return res.status(400).json({msg: "Wrong Password"});
+        if(!match) {
+            // Bad Request
+            return res.status(400).json({msg: "Wrong Password"});
+        }
+
         const userid = user[0].id;
         const login = user[0].login_name;
         const display = user[0].display_name;
-        const accessToken = jwt.sign({userid, login, display}, process.env.ACCESS_TOKEN_SECRET,{
+        const customerid = user[0].customer_id;
+        const accessToken = jwt.sign({userid, login, display, customerid}, process.env.ACCESS_TOKEN_SECRET,{
             expiresIn: '15m'
         });
-        const refreshToken = jwt.sign({userid, login, display}, process.env.REFRESH_TOKEN_SECRET,{
+        const refreshToken = jwt.sign({userid, login, display, customerid}, process.env.REFRESH_TOKEN_SECRET,{
             expiresIn: '1d'
         });
+
         await Users.update({refresh_jwt: refreshToken},{
             where:{
                 id: userid
             }
         });
+
         res.cookie('refreshToken', refreshToken,{
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
         });
         res.json({ accessToken });
     } catch (error) {
+        console.log(error);
         res.status(404).json({msg:"Login name not found"});
     }
 }

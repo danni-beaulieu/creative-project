@@ -1,21 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import jwt_decode from "jwt-decode";
+import { AuthContext, useRefesh } from "./auth_context";
  
 const ViewProjects = () => {
     const [projects, setProjects] = useState([]);
-    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
- 
-    useEffect(() => {
-        getProjects();
-    }, []);
- 
+    const [cookies, setCookie] = useCookies(["userid", "customerid", "display"]);
+    const [auth] = useContext(AuthContext);
+    const [userid, customerid, display] = useRefesh();
+
     const getProjects = async () => {
         const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects');
         console.log(response.data);
         setProjects(response.data);
     }
+
+    useEffect(() => {
+        if (auth) {
+            const decoded = jwt_decode(auth);
+            setCookie("userid", decoded.userid, { path: '/' });
+            setCookie("customerid", decoded.customerid, { path: '/' });
+            setCookie("display", decoded.display, { path: '/' });
+            getProjects();
+        }
+    }, [auth, setCookie, userid, customerid, display]);
  
     const deleteProject = async (id) => {
         await axios.delete(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/projects/${id}`);
@@ -39,11 +49,10 @@ const ViewProjects = () => {
     }
  
     return (
-        <div className="container">
-        <div className="columns">
-        <div className="column is-half is-offset-one-quarter">
+        <div className="container mt-5">
         <div>
-            <Link to="/projects/create" className="button is-primary mt-2">Create</Link>
+        <h1>Welcome Back: {cookies.display}</h1>
+        <div className="buttons is-right"><Link to="/projects/create" className="button is-primary mt-2 is-right">Create</Link></div>
             <table className="table is-striped is-fullwidth">
                 <thead>
                     <tr>
@@ -76,8 +85,6 @@ const ViewProjects = () => {
                      
                 </tbody>
             </table>
-        </div>
-        </div>
         </div>
         </div>
     )

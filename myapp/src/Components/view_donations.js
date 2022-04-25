@@ -22,7 +22,6 @@ const ViewDonations = () => {
         <div className="columns">
         <div className="column is-half is-offset-one-quarter">
         <div>
-            <Link to="/projects/create" className="button is-primary mt-2">Create</Link>
             <table className="table is-striped is-fullwidth">
                 <thead>
                     <tr>
