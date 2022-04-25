@@ -1,18 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import jwt_decode from "jwt-decode";
+import jwt from './use_jwt';
+import { AuthContext, useRefesh } from "./auth_context";
  
 const ViewDonations = () => {
     const [donations, setDonations] = useState([]);
-    const [cookies, setCookie, removeCookie] = useCookies(["userid"]);
+    const [cookies, setCookie] = useCookies(["userid", "customerid", "display"]);
+    const [auth] = useContext(AuthContext);
+    const [userid, customerid, display] = useRefesh();
  
     useEffect(() => {
-        getDonations();
-    }, []);
+        if (auth) {
+            const decoded = jwt_decode(auth);
+            setCookie("userid", decoded.userid, { path: '/' });
+            setCookie("customerid", decoded.customerid, { path: '/' });
+            setCookie("display", decoded.display, { path: '/' });
+            getDonations();
+        }
+    }, [auth, setCookie, userid, customerid, display]);
  
     const getDonations = async () => {
-        const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations/${cookies.userid}`);
+        const response = await jwt.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations/${cookies.userid}`, {
+            headers: {
+                Authorization: `Bearer ${auth}`
+            }
+        });
         console.log(response.data);
         setDonations(response.data);
     }

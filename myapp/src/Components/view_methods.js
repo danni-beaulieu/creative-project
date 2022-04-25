@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from 'react'
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import jwt_decode from "jwt-decode";

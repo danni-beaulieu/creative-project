@@ -43,7 +43,7 @@ router.delete('/projects/:id', verifyToken, deleteProject);
 router.get('/collaborators', getAllCollaborators);
 router.post('/collaborators', createCollaborator);
 
-router.get('/donations/:id', getDonationsByCustomerId);
+router.get('/donations/:id', verifyToken, getDonationsByCustomerId);
 router.post('/donations', makeDonation);
 
 router.post('/stripe/charge', chargeStripe);
