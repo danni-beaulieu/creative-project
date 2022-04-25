@@ -48,10 +48,10 @@ router.post('/donations', makeDonation);
 
 router.post('/stripe/charge', chargeStripe);
 router.post('/stripe/customer', newCustomer);
-router.get('/stripe/customer/:id', getMethods);
+router.get('/stripe/customer/:id', verifyToken, getMethods);
 router.post('/stripe/intent', createIntent);
-router.delete('/stripe/method/:id', deleteMethod);
-router.patch('/stripe/method/:id', updateMethod);
-router.get('/stripe/method/:id', getMethod);
+router.delete('/stripe/method/:id', verifyToken, deleteMethod);
+router.patch('/stripe/method/:id', verifyToken, updateMethod);
+router.get('/stripe/method/:id', verifyToken, getMethod);
  
 export default router;
