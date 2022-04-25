@@ -35,7 +35,7 @@ export const CheckoutForm = () => {
           Authorization: `Bearer ${auth}`
       }
     });
-    if (response.success) {
+    if (response.data.success) {
       let pms = new Array();
       let cards = response.data.methods.data;
       for (let pm in cards) {
@@ -74,6 +74,7 @@ export const CheckoutForm = () => {
     event.preventDefault();
     let secret = '';
     let payerror = false;
+    let newCustomerID = null;
 
     if (cookies.customerid == null || cookies.customerid == '' || cookies.customerid == "null") {
       try {
@@ -88,6 +89,7 @@ export const CheckoutForm = () => {
         if (response.data.success) {
           customerid = response.data.customerid;
           updateUser(customerid);
+          newCustomerID = customerid;
         }
       } catch (error) {
         payerror = true;
@@ -97,14 +99,17 @@ export const CheckoutForm = () => {
 
     if (!payerror) {
       try {
+        let myCustomerID = (cookies.customerid == null || cookies.customerid == 'null') ? newCustomerID : cookies.customerid;
         const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
           {
-            customerid: customerid,
+            customerid: myCustomerID,
             amount: amount
-          }, { headers: {
-            Authorization: `Bearer ${auth}`
-          }});
-
+          }, { 
+            headers: {
+              Authorization: `Bearer ${auth}`
+            }
+          });
+          console.log(JSON.stringify(response));
         if (response.data.success) {
           secret = response.data.secret;
         }
