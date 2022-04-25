@@ -1,6 +1,8 @@
 # CSE330
 Student ID: 497567   
 Github Username: danni-beaulieu   
+Currently running two detached processes on aws: 
+http://ec2-44-202-59-171.compute-1.amazonaws.com:3000/login 
 
 ## Rubric
 
@@ -30,3 +32,18 @@ https://piazza.com/class/ky8xiakerco4ka?cid=555_f3
     * Guests can save card to new account at/after checkout
     * Divides single donation payment among collaborators
     * Can create policy for dividing payment unequally
+
+## Notes
+For creative portion I implemented JWT with access tokens and refresh tokens for all sensitive actions.
+
+For adding a credit card, this is done during checkout. Other credit card options available under Account.
+
+Collaborators on a project can edit but not delete.
+
+#### Test Card:
+
+Visa: 4242 4242 4242 4242
+Expire: 04/24
+CVC: 242
+Zip: 42424
+
