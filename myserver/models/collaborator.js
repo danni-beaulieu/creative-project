@@ -13,5 +13,14 @@ const Collaborator = db.define('collaborators',{
 },{
     freezeTableName: true
 });
+
+(async () => {
+    try {
+        await db.sync();
+        console.log("Success!");
+    } catch (error) {
+        console.log(error);
+    }
+})();
  
 export default Collaborator;

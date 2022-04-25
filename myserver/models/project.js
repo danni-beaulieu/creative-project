@@ -18,8 +18,13 @@ const Project = db.define('projects',{
     freezeTableName: true
 });
 
-Project.hasMany(Collaborator, {
-    foreignKey: 'project_id'
-  });
+(async () => {
+    try {
+        await db.sync();
+        console.log("Success!");
+    } catch (error) {
+        console.log(error);
+    }
+})();
 
 export default Project;

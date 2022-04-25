@@ -23,7 +23,7 @@ const Users = db.define('users',{
 },{
     freezeTableName:true
 });
- 
+
 (async () => {
     try {
         await db.sync();
@@ -32,9 +32,5 @@ const Users = db.define('users',{
         console.log(error);
     }
 })();
-
-Users.hasMany(Donation, {
-    foreignKey: 'user_id'
-  });
  
 export default Users;

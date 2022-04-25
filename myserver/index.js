@@ -5,10 +5,15 @@ import cors from "cors";
 import db from "./config/database.js";
 import router from "./routes/index.js";
 
+import Project from "./models/project.js";
+import Users from "./models/user.js";
+import Collaborator from "./models/collaborator.js";
+import Donation from "./models/donation.js";
+
 dotenv.config();
 const app = express();
 
-const nameYourFunction = async () => {
+const connectToDB = async () => {
     try {
         await db.authenticate();
         console.log('Database connected...');
@@ -16,7 +21,19 @@ const nameYourFunction = async () => {
         console.error('Connection error:', error);
     }
 }
-nameYourFunction();
+connectToDB();
+Collaborator.belongsTo(Users, {
+    foreignKey: "collaborator_id"
+});
+Donation.belongsTo(Project, {
+    foreignKey: "project_id"
+});
+Project.hasMany(Collaborator, {
+    foreignKey: 'project_id'
+});
+Users.hasMany(Donation, {
+    foreignKey: 'user_id'
+});
  
 app.use(cors({ credentials:true, origin:'http://ec2-44-202-59-171.compute-1.amazonaws.com:3000' }));
 app.use(cookieParser());

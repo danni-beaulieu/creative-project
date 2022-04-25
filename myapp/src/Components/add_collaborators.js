@@ -11,12 +11,26 @@ const AddCollaborator = () => {
     const { id } = useParams();
     const [msg, setMsg] = useState('');
     const [users, setUsers] = useState([]);
+    const [collaborators, setCollaborators] = useState([]);
     const [collaborator, setCollaboratorID] = useState('');
     const [cookies, setCookie] = useCookies(["userid", "customerid", "display"]);
     const [auth] = useContext(AuthContext);
     const [userid, customerid, display] = useRefesh();
 
     useEffect(() => {
+        const getCollaborators = async () => {
+            try {
+                const response = await jwt.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/collaborators/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${auth}`
+                    }
+                });
+                console.log(JSON.stringify(response));
+                setCollaborators(response.data.collaborators);
+            } catch (error) {
+                console.log("add_collaborators.getCollaborators: " + error);
+            }
+        }
         const getUsers = async () => {
             try {
                 const response = await jwt.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
@@ -26,7 +40,7 @@ const AddCollaborator = () => {
                 });
                 setUsers(response.data);
             } catch (error) {
-                console.log("view_users.getUsers: " + error);
+                console.log("add_collaborators.getUsers: " + error);
             }
         }
         if (auth) {
@@ -34,6 +48,7 @@ const AddCollaborator = () => {
             setCookie("userid", decoded.userid, { path: '/' });
             setCookie("customerid", decoded.customerid, { path: '/' });
             setCookie("display", decoded.display, { path: '/' });
+            getCollaborators()
             getUsers();
         }
     }, [auth, setCookie, userid, customerid, display]);
@@ -66,6 +81,26 @@ const AddCollaborator = () => {
                         <div className="column is-4-desktop">
                             <form onSubmit={addCollaborator} className="box">
                                 <p className="has-text-centered">{msg}</p>
+
+                                <table className="table is-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Login</th>
+                                            <th>Display</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    { collaborators.map((collaborator, index) => (
+                                        <tr key={ collaborator.user.id }>
+                                            <td>{ index + 1 }</td>
+                                            <td>{ collaborator.user.login_name }</td>
+                                            <td>{ collaborator.user.display_name }</td>
+                                        </tr>
+                                    )) }
+                                    </tbody>
+                                </table>
+
                                 <div className="field mt-5">
                                     <Select
                                         defaultValue={collaborator}

@@ -35,7 +35,6 @@ export const CheckoutForm = () => {
           Authorization: `Bearer ${auth}`
       }
     });
-    console.log(JSON.stringify(response.data));
     if (response.success) {
       let pms = new Array();
       let cards = response.data.methods.data;
@@ -78,7 +77,8 @@ export const CheckoutForm = () => {
 
     if (cookies.customerid == null || cookies.customerid == '' || cookies.customerid == "null") {
       try {
-        const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer", {
+        console.log(JSON.stringify(auth));
+        const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer", {}, {
           headers: {
               Authorization: `Bearer ${auth}`
           }
@@ -90,25 +90,28 @@ export const CheckoutForm = () => {
           updateUser(customerid);
         }
       } catch (error) {
+        payerror = true;
         console.log("CheckoutForm.js 29 | ", error);
       }
     }
 
-    try {
-      const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
-        {
-          customerid: customerid,
-          amount: amount
-        }, { headers: {
-          Authorization: `Bearer ${auth}`
-        }});
+    if (!payerror) {
+      try {
+        const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
+          {
+            customerid: customerid,
+            amount: amount
+          }, { headers: {
+            Authorization: `Bearer ${auth}`
+          }});
 
-      if (response.data.success) {
-        secret = response.data.secret;
+        if (response.data.success) {
+          secret = response.data.secret;
+        }
+      } catch (error) {
+        payerror = true;
+        console.log("CheckoutForm.js 29 | ", error, payerror);
       }
-    } catch (error) {
-      payerror = true;
-      console.log("CheckoutForm.js 29 | ", error, payerror);
     }
 
     if (!payerror) {

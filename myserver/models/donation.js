@@ -17,9 +17,14 @@ const Donation = db.define('donations',{
 },{
     freezeTableName: true
 });
-
-Donation.belongsTo(Project, {
-    foreignKey: "project_id"
-});
  
+(async () => {
+    try {
+        await db.sync();
+        console.log("Success!");
+    } catch (error) {
+        console.log(error);
+    }
+})();
+
 export default Donation;
