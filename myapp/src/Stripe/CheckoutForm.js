@@ -1,12 +1,16 @@
 import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import axios from "axios";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
+import jwt_decode from "jwt-decode";
+import jwt from '../Components/use_jwt';
+import { AuthContext, useRefesh } from "../Components/auth_context";
 
 export const CheckoutForm = () => {
-  const [cookies, setCookie] = useCookies(["userid", "customerid"]);
+  const [cookies, setCookie] = useCookies(["userid", "customerid", "display"]);
+  const [auth] = useContext(AuthContext);
+  let [userid, customerid, display] = useRefesh();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('0');
   const [methods, setMethods] = useState([]);
@@ -14,39 +18,53 @@ export const CheckoutForm = () => {
   const { id } = useParams();
   const stripe = useStripe();
   const elements = useElements();
-  let userid = cookies.userid;
-  let customerid = cookies.customerid;
 
   useEffect(() => {
-    getPaymentMethods();
-  }, []);
+    if (auth) {
+        const decoded = jwt_decode(auth);
+        setCookie("userid", decoded.userid, { path: '/' });
+        setCookie("display", decoded.display, { path: '/' });
+        setCookie("customerid", decoded.customerid, { path: '/' });
+        getPaymentMethods();
+    }
+  }, [auth, setCookie, userid, customerid, display]);
 
   const getPaymentMethods = async () => {
-    console.log(customerid);
-    const response = await axios.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer/${customerid}`);
+    const response = await jwt.get(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer/${cookies.customerid}`, {
+      headers: {
+          Authorization: `Bearer ${auth}`
+      }
+    });
     console.log(JSON.stringify(response.data));
-    let pms = new Array();
-    let cards = response.data.methods.data;
-    for (let pm in cards) {
-      let newPM = {id: cards[pm].id, four: cards[pm].card.last4};
-      pms.push(newPM);
+    if (response.success) {
+      let pms = new Array();
+      let cards = response.data.methods.data;
+      for (let pm in cards) {
+        let newPM = {id: cards[pm].id, four: cards[pm].card.last4};
+        pms.push(newPM);
+      }
+      console.log(JSON.stringify(pms));
+      setMethods(pms);
     }
-    console.log(JSON.stringify(pms));
-    setMethods(pms);
   }
 
-  const updateUser = async () => {
-    await axios.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${userid}`,{
+  const updateUser = async (customerid) => {
+    console.log(customerid);
+    await jwt.patch(`http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users/${cookies.userid}`,{
         customer_id: customerid
-    });
+      }, { headers: {
+        Authorization: `Bearer ${auth}`
+    }});
   }
 
   const makeDonation = async () => {
-    const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations",{
+    const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/donations",{
       project_id: id,
       user_id: cookies.userid,
       amount: amount
-    });
+      }, { headers: {
+        Authorization: `Bearer ${auth}`
+      }});
     console.log(JSON.stringify(response))
     if (response.data.success) {
       navigate("/");
@@ -55,33 +73,35 @@ export const CheckoutForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(typeof userid);
-    console.log(typeof customerid);
     let secret = '';
     let payerror = false;
 
-    if (customerid == null || customerid == '' || customerid == "null") {
+    if (cookies.customerid == null || cookies.customerid == '' || cookies.customerid == "null") {
       try {
-        const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer");
+        const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/customer", {
+          headers: {
+              Authorization: `Bearer ${auth}`
+          }
+        });
 
+        console.log(JSON.stringify(response));
         if (response.data.success) {
           customerid = response.data.customerid;
-          setCookie("customerid", customerid, { path: '/' });
-          updateUser();
+          updateUser(customerid);
         }
       } catch (error) {
         console.log("CheckoutForm.js 29 | ", error);
       }
     }
 
-    console.log(customerid);
-
     try {
-      const response = await axios.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
+      const response = await jwt.post("http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/stripe/intent",
         {
-          customerid:customerid,
-          amount:amount
-        });
+          customerid: customerid,
+          amount: amount
+        }, { headers: {
+          Authorization: `Bearer ${auth}`
+        }});
 
       if (response.data.success) {
         secret = response.data.secret;
