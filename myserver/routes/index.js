@@ -41,7 +41,7 @@ router.patch('/projects/:id', verifyToken, updateProject);
 router.delete('/projects/:id', verifyToken, deleteProject);
 
 router.get('/collaborators', getAllCollaborators);
-router.post('/collaborators', createCollaborator);
+router.post('/collaborators', verifyToken, createCollaborator);
 
 router.get('/donations/:id', verifyToken, getDonationsByCustomerId);
 router.post('/donations', makeDonation);

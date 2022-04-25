@@ -1,98 +1,53 @@
-import React, { useState, useEffect } from 'react'
-import axios from "axios";
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import jwt_decode from "jwt-decode";
 import Select from 'react-select';
+import jwt from './use_jwt';
+import { AuthContext, useRefesh } from "./auth_context";
 
 const AddCollaborator = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [msg, setMsg] = useState('');
-    const [token, setToken] = useState('');
-    const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
     const [collaborator, setCollaboratorID] = useState('');
-    const [cookies, setCookie, removeCookie] = useCookies(["userid", "customerid"]);
- 
-    useEffect(() => {
-        refreshToken();
-    }, []);
+    const [cookies, setCookie] = useCookies(["userid", "customerid", "display"]);
+    const [auth] = useContext(AuthContext);
+    const [userid, customerid, display] = useRefesh();
 
     useEffect(() => {
-        // this will be triggered whenever token will be updated
-        console.log('add_collaborators.useEffect getting users... ', token);
-        if (token) {
-            getUsers();
-        }
-      }, [token]);
-
-    const refreshToken = async () => {
-        console.log("dashboard.refreshToken... ");
-        try {
-            const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/token');
-            console.log("dashboard.refreshToken response.data:" + JSON.stringify(response.data));
-            setToken(response.data.token);
-            console.log("dashboard.refreshToken token set:" + token);
-            const decoded = jwt_decode(response.data.token);
-            console.log("dashboard.refreshToken decoded:" + JSON.stringify(decoded));
-            setCookie("userid", decoded.userid, { path: '/' });
-            setCookie("customerid", decoded.customerid, { path: '/' });
-            console.log("dashboard.refreshToken cookie: (uid) " + cookies.userid + " (cid) " + cookies.customerid);
-            setExpire(decoded.exp);
-        } catch (error) {
-            console.log("dashboard.refreshToken error:" + error);
-            if (error.response) {
-                navigate("/login");
+        const getUsers = async () => {
+            try {
+                const response = await jwt.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
+                    headers: {
+                        Authorization: `Bearer ${auth}`
+                    }
+                });
+                setUsers(response.data);
+            } catch (error) {
+                console.log("view_users.getUsers: " + error);
             }
         }
-    }
-
-    const axiosJWT = axios.create();
-
-    axiosJWT.interceptors.request.use(async (config) => {
-        const currentDate = new Date();
-        if (expire * 1000 < currentDate.getTime()) {
-            const response = await axios.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/token');
-            console.log("dashboard response.data:" + JSON.stringify(response.data));
-            config.headers.Authorization = `Bearer ${response.data.token}`;
-            setToken(response.data.token);
-            console.log("dashboard token set:" + token);
-            const decoded = jwt_decode(response.data.token);
-            console.log("dashboard decoded: " + JSON.stringify(decoded));
+        if (auth) {
+            const decoded = jwt_decode(auth);
             setCookie("userid", decoded.userid, { path: '/' });
             setCookie("customerid", decoded.customerid, { path: '/' });
-            console.log("dashboard cookie: (uid) " + cookies.userid + " (cid) " + cookies.customerid);
-            setExpire(decoded.exp);
+            setCookie("display", decoded.display, { path: '/' });
+            getUsers();
         }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
-
-    const getUsers = async () => {
-        try {
-            console.log("add_collaborators.getUsers token: " + token);
-            const response = await axiosJWT.get('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/users', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log("add_collaborators.getUsers users: " + JSON.stringify(response.data));
-            setUsers(response.data);
-        } catch (error) {
-            console.log("add_collaborators.getUsers: " + error);
-        }
-    }
+    }, [auth, setCookie, userid, customerid, display]);
 
     const addCollaborator = async (e) => {
         e.preventDefault();
         console.log(collaborator);
         try {
-            await axios.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/collaborators', {
+            await jwt.post('http://ec2-44-202-59-171.compute-1.amazonaws.com:5000/collaborators', {
                 project_id: id,
                 collaborator_id: collaborator.value
-            });
+            }, { headers: {
+                Authorization: `Bearer ${auth}`
+            }});
             console.log("Successful add!")
             navigate("/projects");
         } catch (error) {
