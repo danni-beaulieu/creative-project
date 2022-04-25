@@ -1,6 +1,7 @@
 import Users from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import db from "../config/database.js";
  
 export const getUsers = async(req, res) => {
     try {
@@ -14,13 +15,19 @@ export const getUsers = async(req, res) => {
 }
  
 export const Register = async(req, res) => {
-    const { login, display, password, confPassword } = req.body;
+    const { display, password, confPassword } = req.body;
     if(password !== confPassword) return res.status(400).json({msg: "Password and Confirm Password do not match"});
+    
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
+    const [results, metadata] = await db.query("SELECT auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wustl' AND TABLE_NAME = 'users';");
+    console.log(JSON.stringify(results));
+
+    let newLogin = results[0].auto_increment + display;
+
     try {
         await Users.create({
-            login_name: login,
+            login_name: newLogin,
             display_name: display,
             password: hashPassword
         });
