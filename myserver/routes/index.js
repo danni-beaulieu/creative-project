@@ -35,9 +35,9 @@ router.get('/token', refreshToken);
 router.delete('/logout', Logout);
 
 router.get('/projects', verifyToken, getAllProjects);
-router.get('/projects/:id', getProjectById);
-router.post('/projects', createProject);
-router.patch('/projects/:id', updateProject);
+router.get('/projects/:id', verifyToken, getProjectById);
+router.post('/projects', verifyToken, createProject);
+router.patch('/projects/:id', verifyToken, updateProject);
 router.delete('/projects/:id', verifyToken, deleteProject);
 
 router.get('/collaborators', getAllCollaborators);
